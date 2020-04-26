@@ -28,7 +28,7 @@ spawn do
 
   requester.connect(link)
 
-  num_requests.times do |index|
+  num_requests.times do
     requester.send_string("Hello")
     Fiber.yield
     requester.receive_string

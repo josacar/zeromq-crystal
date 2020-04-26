@@ -134,7 +134,6 @@ describe ZMQ::Socket do
 
         sockets.each do |socket|
           spawn do
-            buffer = ""
             buffer = socket.receive_string
             socket.close
             channel.send buffer
@@ -166,7 +165,11 @@ describe ZMQ::Socket do
         APIHelper.connect_to_inproc pong, PING_ENDPOINT
 
         APIHelper.send_ping(ping, pong, STRING)
-        ping.send_string(STRING).should be_false
+
+        expect_raises(Exception, "Operation cannot be accomplished in current state") do
+          ping.send_string(STRING).should be_false
+        end
+
         ZMQ::Util.errno.should eq(ZMQ::EFSM)
       end
     end

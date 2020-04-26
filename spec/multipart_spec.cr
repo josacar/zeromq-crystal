@@ -30,7 +30,7 @@ describe ZMQ::Socket do
 
     it "correctly handles a multipart message with multiple recieve" do
       data = { "topic", "payload" }
-      
+
       APIHelper.with_pair_sockets(ZMQ::PUSH, ZMQ::PULL) do |sender, receiver|
         sender.identity = "Test-Sender"
         sender.bind MULTIPART_ENDPOINT

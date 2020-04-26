@@ -17,7 +17,7 @@ def client(id)
 
     request_number = 0
     loop do
-      10.times do |tick|
+      10.times do
         if poller.poll(1) > 0
           message = client.receive_string(ZMQ::DONTWAIT)
           puts "\nClient: #{client.identity} get message: #{message}" unless message.empty?

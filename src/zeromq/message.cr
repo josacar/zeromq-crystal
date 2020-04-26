@@ -14,7 +14,7 @@ module ZMQ
       @closed, @pointer = false, LibZMQ::Msg.new
 
       if message
-        LibZMQ.msg_init_data(address, message.to_unsafe.as(Void*), message.size, ->(a, b) { LibC.free(b) }, nil)
+        LibZMQ.msg_init_data(address, message.to_unsafe.as(Void*), message.size, ->(_a, b) { LibC.free(b) }, nil)
       else
         LibZMQ.msg_init address
       end

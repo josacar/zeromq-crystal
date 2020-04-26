@@ -5,7 +5,7 @@ BACK_ENDPOINT  = "inproc://device_back_test"
 CHANNEL = Channel(String).new
 
 def create_streamer
-  ZMQ::Context.create(ZMQ::PUSH, ZMQ::PULL) do |ctx,(front, back)|
+  ZMQ::Context.create(ZMQ::PUSH, ZMQ::PULL) do |_ctx,(front, back)|
     back.bind(BACK_ENDPOINT)   || puts("Not able to bind to #{BACK_ENDPOINT}")
     front.bind(FRONT_ENDPOINT) || puts("Not able to bind to #{FRONT_ENDPOINT}")
     CHANNEL.send "ping"
@@ -15,7 +15,7 @@ def create_streamer
 end
 
 def create_raw_streamer
-  ZMQ::Context.create(ZMQ::ROUTER, ZMQ::DEALER) do |ctx,(frontend, backend)|
+  ZMQ::Context.create(ZMQ::ROUTER, ZMQ::DEALER) do |_ctx,(frontend, backend)|
     frontend.bind(FRONT_ENDPOINT)
     backend.bind(BACK_ENDPOINT)
 
@@ -51,7 +51,7 @@ describe ZMQ::Device do
     CHANNEL.receive
 
     spawn do
-      ZMQ::Context.create(ZMQ::PUSH, ZMQ::PULL) do |ctx,(pusher, puller)|
+      ZMQ::Context.create(ZMQ::PUSH, ZMQ::PULL) do |_ctx,(pusher, puller)|
         APIHelper.connect_to_inproc(pusher, BACK_ENDPOINT)
         APIHelper.connect_to_inproc(puller, FRONT_ENDPOINT)
 

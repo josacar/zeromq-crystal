@@ -12,11 +12,13 @@ module APIHelper
   end
 
   def with_pair_sockets(first_socket_type = ZMQ::PUSH, last_socket_type = ZMQ::PULL)
-    with_context_and_sockets(first_socket_type, last_socket_type) { |ctx, first, last| yield first, last }
+    with_context_and_sockets(first_socket_type, last_socket_type) do |_ctx, first, last|
+      yield first, last
+    end
   end
 
   def with_context_and_sockets(first_socket_type = ZMQ::PUSH, last_socket_type = ZMQ::PULL)
-    ZMQ::Context.create first_socket_type, last_socket_type do |ctx, (first, last)|
+    ZMQ::Context.create(first_socket_type, last_socket_type) do |ctx, (first, last)|
       yield ctx, first, last
     end
   end

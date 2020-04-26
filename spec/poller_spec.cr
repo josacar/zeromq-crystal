@@ -6,7 +6,7 @@ describe ZMQ::Poller do
   context "#register" do
     it "returns false when given a nil pollable" do
       poller = ZMQ::Poller.new
-      ZMQ::Context.create(ZMQ::DEALER) do |ctx, (pollable)|
+      ZMQ::Context.create(ZMQ::DEALER) do |_ctx, (pollable)|
         orig = poller.poll_items.size
         poller.register(pollable, ZMQ::POLLIN)
         poller.poll_items.size.should eq(orig + 1)
@@ -22,7 +22,7 @@ describe ZMQ::Poller do
 
    it "returns 0 when there is a single socket to poll and no events" do
       poller = ZMQ::Poller.new
-      ZMQ::Context.create(ZMQ::DEALER) do |ctx, (first)|
+      ZMQ::Context.create(ZMQ::DEALER) do |_ctx, (first)|
         poller.register(first, ZMQ::POLLIN)
         poller.poll(1).should eq(0)
       end
@@ -30,7 +30,7 @@ describe ZMQ::Poller do
 
     it "returns 1 when there is a read event on a socket" do
       poller = ZMQ::Poller.new
-      ZMQ::Context.create(ZMQ::DEALER, ZMQ::ROUTER) do |ctx, (first, last)|
+      ZMQ::Context.create(ZMQ::DEALER, ZMQ::ROUTER) do |_ctx, (first, last)|
         first.bind POLLER_ENDPOINT
         APIHelper.connect_to_inproc last, POLLER_ENDPOINT
 

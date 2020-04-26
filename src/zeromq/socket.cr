@@ -137,11 +137,11 @@ module ZMQ
         message = @message_type.new
         rc = LibZMQ.msg_recv(message.address, @socket, flags | ZMQ::DONTWAIT)
         if rc == -1
-            if Util.errno == Errno::EAGAIN
-              wait_readable
-            else
-              raise Util.error_string
-            end
+          if Util.errno == ZMQ::EAGAIN
+            wait_readable
+          else
+            raise Util.error_string
+          end
         else
           return message
         end
@@ -202,20 +202,25 @@ module ZMQ
     end
 
     def set_socket_option(name, value)
-      rc = case
-           when INT32_SOCKET_OPTIONS.includes?(name) && value.is_a?(Int32)
-             value32 = value.to_i
-             LibZMQ.setsockopt(@socket, name, pointerof(value32).as(Void*), sizeof(Int32))
-           when INT32_SOCKET_OPTIONS_V4.includes?(name) && value.is_a?(Int32)
-             value32 = value.to_i
-             LibZMQ.setsockopt @socket, name, pointerof(value32).as(Void*), sizeof(Int32)
-           when INT64_SOCKET_OPTIONS.includes?(name) && value.is_a?(Int64)
-             value64 = value.to_i64
-             LibZMQ.setsockopt(@socket, name, pointerof(value64).as(Void*), sizeof(Int64))
-           when STRING_SOCKET_OPTIONS.includes?(name) && value.is_a?(String)
-             LibZMQ.setsockopt @socket, name, value.to_unsafe.as(Void*), value.size
-           when STRING_SOCKET_OPTIONS_V4.includes?(name) && value.is_a?(String)
-             LibZMQ.setsockopt @socket, name, value.to_unsafe.as(Void*), value.size
+      rc = if INT32_SOCKET_OPTIONS.includes?(name)
+             case value.class
+             when Int32
+               value32 = value.to_i
+               LibZMQ.setsockopt(@socket, name, pointerof(value32).as(Void*), sizeof(Int32))
+             when Int64
+               value64 = value.to_i64
+               LibZMQ.setsockopt(@socket, name, pointerof(value64).as(Void*), sizeof(Int64))
+             when String
+               LibZMQ.setsockopt @socket, name, value.to_unsafe.as(Void*), value.size
+             end
+           elsif INT32_SOCKET_OPTIONS_V4.includes?(name)
+             case value.class
+             when Int32
+               value32 = value.to_i
+               LibZMQ.setsockopt(@socket, name, pointerof(value32).as(Void*), sizeof(Int32))
+             when String
+               LibZMQ.setsockopt(@socket, name, value.to_unsafe.as(Void*), value.size)
+             end
            else
              raise "Invalid socket option"
            end

@@ -9,7 +9,7 @@ class ZMQ::Context
   def self.create(*socket_types, io_threads = IO_THREADS_DFLT, max_sockets = MAX_SOCKETS_DFLT)
     ctx = new io_threads, max_sockets
     sockets = ctx.sockets(*socket_types)
-    
+
     yield ctx, sockets
 
     sockets.each(&.close)
